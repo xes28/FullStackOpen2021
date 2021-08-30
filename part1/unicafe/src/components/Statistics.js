@@ -17,11 +17,11 @@ const Statistics = ({ clicks }) => {
         <div>
             <table>
                 <tbody>
-                    <Statistic name="Good" result={clicks.good} symbol="." />
-                    <Statistic name="Neutral" result={clicks.neutral} symbol="." />
-                    <Statistic name="Bad" result={clicks.bad} symbol="." />
-                    <Statistic name="Total" result={total} symbol="." />
-                    <Statistic name="Average" result={avg} symbol="." />
+                    <Statistic name="Good" result={clicks.good} />
+                    <Statistic name="Neutral" result={clicks.neutral} />
+                    <Statistic name="Bad" result={clicks.bad} />
+                    <Statistic name="Total" result={total} />
+                    <Statistic name="Average" result={avg} />
                     <Statistic name="Positive" result={positive} symbol="%" />
                 </tbody>
             </table>
