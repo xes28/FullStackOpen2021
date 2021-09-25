@@ -3,8 +3,7 @@ import Content from './components/Content'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Header from './components/Headers'
-import personsService from './services/PersonService'
-import PersonService from './services/PersonService'
+import personsService from './services/PersonService';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -15,7 +14,7 @@ const App = () => {
   const [successMessage, setSusccessMessage] = useState('');
 
   useEffect(() => {
-    personsService.getAll()
+    personsService().getAllPersons()
       .then(response => {
         const { data } = response;
         setPersons(data);
@@ -32,14 +31,12 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const repeated = persons.filter((person) => person.name === newName)
-    //Si existe es que el nombre introducido ya existe en la lista
-    if (repeated[0]) {
-      let personToUpdate = repeated[0];
+    const repeated = persons.find((person) => person.name === newName)    //Si existe es que el nombre introducido ya existe en la lista
+    if (repeated) {
+      let personToUpdate = repeated;
       personToUpdate.number = newNumber;
-      console.log(personToUpdate);
       if (window.confirm(`${personToUpdate.name} is already added to phonebook. Do you want to replace the old number with the new one?`)) {
-        PersonService.update(personToUpdate.id, personToUpdate)
+        personsService().updatePerson(personToUpdate.id, personToUpdate)
           .then((response) => {
             const { data } = response;
             setSusccessMessage(`Updated ${data.name}`)
@@ -61,7 +58,7 @@ const App = () => {
         number: newNumber
       };
 
-      personsService.create(addNewPerson)
+      personsService().createPerson(addNewPerson)
         .then((response) => {
           const { data } = response;
           setPersons(persons.concat(data));
@@ -92,12 +89,12 @@ const App = () => {
   }
 
   const deletePerson = (id) => {
-    const personToDelete = persons.filter((person) => person.id === id);
-    if (window.confirm(`Delete ${personToDelete[0].name}?`)) {
-      personsService.delete(personToDelete)
+    const personToDelete = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${personToDelete.name}?`)) {
+      personsService().deletePerson(personToDelete)
         .then((response) => {
-          setPersons(persons.filter(person => person.id !== personToDelete[0].id));
-          setSusccessMessage(`Deleted ${personToDelete[0].name}`)
+          setPersons(persons.filter(person => person.id !== personToDelete.id));
+          setSusccessMessage(`Deleted ${personToDelete.name}`)
           setTimeout(() => {
             setSusccessMessage(null)
           }, 2000)
