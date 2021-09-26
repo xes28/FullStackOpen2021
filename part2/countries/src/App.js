@@ -8,29 +8,33 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [countriesFiltered, setCountriesFiltered] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     setLoading(true);
-    axios.get('https://restcountries.eu/rest/v2/all')
+    axios.get('https://restcountries.com/v3/all')
       .then(response => {
         const { data } = response;
         setCountries(data);
         setLoading(false);
+      })
+      .catch(error => {
+        setErrorMsg('API DOESN\'T WORK, CHECK THE API CALL');
       })
   }, []);
 
   const handleOnChange = event => {
     setSearchCountry(event.target.value);
     if (searchCountry) {
-      const countriesFiltered = countries.filter((country) => country.name.toLowerCase().includes(searchCountry.toLowerCase()));
+      const countriesFiltered = countries.filter((country) => country.name.common.toLowerCase().includes(searchCountry.toLowerCase()));
       setCountriesFiltered(countriesFiltered);
     }
   };
 
   return (
     <div>
-      {loading ? "Loading..." : ""}
-      <Filter value={searchCountry} onChange={handleOnChange} />
+      {loading && !errorMsg ? "Loading..." : ""}
+      <Filter value={searchCountry} onChange={handleOnChange} errMsg={errorMsg} />
       <Content countries={countriesFiltered} setCountriesFiltered={setCountriesFiltered} />
     </div>
   );

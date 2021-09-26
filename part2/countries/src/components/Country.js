@@ -9,7 +9,7 @@ const Country = ({ country }) => {
         setLoading(true);
         const params = {
             access_key: process.env.REACT_APP_API_KEY,
-            query: country.capital
+            query: country.capital[0]
         }
 
         axios.get('http://api.weatherstack.com/current', { params })
@@ -23,28 +23,29 @@ const Country = ({ country }) => {
 
     return (
         <div>
-            <h1>{country.name}</h1>
+            <h1>{country.name.common}</h1>
             <p>
                 <strong>Capital: </strong>{country.capital}
             </p>
             <p>
-                <strong>Population: </strong>{country.population}
+                <strong>Region: </strong>{country.region}
             </p>
-            <h2>Languages</h2>
+            {/* <h2>Languages</h2>
             <ul>
                 {country.languages.map((language, i) =>
                     <li key={i}>{language.name}</li>
                 )}
-            </ul>
+            </ul> */}
+            <h2>Flag</h2>
             <p>
-                <img src={country.flag}
+                <img src={country.flags[0]}
                     alt="flag"
                     style={{ width: 200, height: 200 }}
                 />
             </p>
             {weather.current && !loading ?
                 <div>
-                    <h2>Weather in {country.name}</h2>
+                    <h2>Weather in {country.name.common}</h2>
                     <p>
                         <strong>Temperature: </strong>{weather.current.temperature}
                     </p>

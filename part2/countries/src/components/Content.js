@@ -13,7 +13,7 @@ const Content = ({ countries, setCountriesFiltered }) => {
                     {countries.map((country) =>
                         // Al clicar en el botón seteamos el país en el que se clica para mostrar directamente su información
                         // ya que se vuelve a renderizar el componente y el tamaño es 1 por lo que accede directamente al componente Country
-                        <li key={country.name}>{country.name} <button onClick={() => setCountriesFiltered([country])}>Show</button></li>
+                        <li key={country.name.common}>{country.name.common} <button onClick={() => setCountriesFiltered([country])}>Show</button></li>
                     )}
                 </ul>
             </div>
