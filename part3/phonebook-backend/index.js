@@ -1,3 +1,4 @@
+const morgan = require('morgan')
 const express = require('express');
 const app = express();
 
@@ -24,13 +25,20 @@ let persons = [
     "name": "Mary Poppendieck",
     "number": "39-23-6423122",
     "id": 4
-  },
-  {
-    "name": "Test",
-    "number": "987654321",
-    "id": 5
   }
 ]
+
+//Uso de morgan como middleware
+app.use(morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms',
+    JSON.stringify(req.body)
+  ].join(' ')
+}))
 
 //Raiz
 app.get('/', (request, response) => {
@@ -58,12 +66,11 @@ app.post('/api/persons', (request, response) => {
   const person = request.body
   const duplicated = persons.map(tmpPerson => tmpPerson.name === person.name);
 
-
   if (!person || !person.name || !person.number) {
     return response.status(404).json({
       error: 'body\'s missing'
     })
-  } else if (duplicated) {
+  } else if (duplicated.includes(true)) {
     return response.status(404).json({
       error: 'name must be unique'
     })
