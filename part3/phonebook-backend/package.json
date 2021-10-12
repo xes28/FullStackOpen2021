@@ -1,7 +1,6 @@
 {
   "name": "phonebook-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -17,5 +16,7 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
-  }
+  },
+  "keywords": [],
+  "description": ""
 }
