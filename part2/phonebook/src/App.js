@@ -45,7 +45,7 @@ const App = () => {
             }, 5000)
           })
           .catch(error => {
-            setErrorMessage(`${personToUpdate.name} was already removed from the server`)
+            setErrorMessage(error.response.data.error)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
@@ -57,7 +57,6 @@ const App = () => {
         name: newName,
         number: newNumber
       };
-
       personsService().createPerson(addNewPerson)
         .then((response) => {
           const { data } = response;
@@ -73,7 +72,6 @@ const App = () => {
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
-          console.log(error.response.data)
         })
     }
   }
