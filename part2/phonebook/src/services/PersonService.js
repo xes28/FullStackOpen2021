@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = '/api/persons';
+const baseUrl = 'http://localhost:3001/api/persons';
 
 function personService() {
 
@@ -17,14 +17,21 @@ function personService() {
     }
 
     const updatePerson = (id, personToUpdate) => {
-        return axios.put(`${baseUrl}/${id}`, personToUpdate)
+        const request = axios.put(`${baseUrl}/${id}`, personToUpdate)
+        return request.then(response => response.data)
+    }
+
+    const query = (name) => {
+        const request = axios.get(`${baseUrl}/query/${name}`)
+        return request.then(response => response.data)
     }
 
     return {
         getAllPersons,
         deletePerson,
         updatePerson,
-        createPerson
+        createPerson,
+        query
     };
 }
 

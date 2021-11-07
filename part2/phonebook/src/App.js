@@ -4,6 +4,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Header from './components/Headers'
 import personsService from './services/PersonService';
+import personService from './services/PersonService'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -31,49 +32,47 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const repeated = persons.find((person) => person.name === newName)    //Si existe es que el nombre introducido ya existe en la lista
-    if (repeated) {
-      let personToUpdate = repeated;
-      personToUpdate.number = newNumber;
-      if (window.confirm(`${personToUpdate.name} is already added to phonebook. Do you want to replace the old number with the new one?`)) {
-        personsService().updatePerson(personToUpdate.id, personToUpdate)
+    personService().query(newName).then(person => {
+      console.log("Paso 2 ", { person })
+      const newObject = {
+        'name': newName,
+        'number': newNumber,
+      }
+      if (person) {
+        if (window.confirm(`${newName} is already added to phonebook. Do you want to replace the old number with the new one?`)) {
+          personsService().updatePerson(person.id, newObject)
+            .then((response) => {
+              const { data } = response;
+              setSusccessMessage(`Updated ${data.name}`)
+              setTimeout(() => {
+                setSusccessMessage(null)
+              }, 5000)
+            }).catch(error => {
+              setErrorMessage(error.response.data.error)
+              setTimeout(() => {
+                setErrorMessage(null)
+              }, 5000)
+            })
+        }
+        blankInputs();
+      } else {
+        personsService().createPerson(newObject)
           .then((response) => {
             const { data } = response;
-            setSusccessMessage(`Updated ${data.name}`)
+            setPersons(persons.concat(data));
+            setSusccessMessage(`Added ${data.name}`)
+            blankInputs();
             setTimeout(() => {
               setSusccessMessage(null)
-            }, 5000)
-          })
-          .catch(error => {
-            setErrorMessage(error.response.data.error)
+            }, 2000)
+          }).catch(error => {
+            setErrorMessage(`${error.response.data.error}`)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
           })
       }
-      blankInputs();
-    } else {
-      const addNewPerson = {
-        name: newName,
-        number: newNumber
-      };
-      personsService().createPerson(addNewPerson)
-        .then((response) => {
-          const { data } = response;
-          setPersons(persons.concat(data));
-          setSusccessMessage(`Added ${data.name}`)
-          blankInputs();
-          setTimeout(() => {
-            setSusccessMessage(null)
-          }, 2000)
-        })
-        .catch(error => {
-          setErrorMessage(`${error.response.data.error}`)
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000)
-        })
-    }
+    })
   }
 
 
@@ -96,8 +95,7 @@ const App = () => {
           setTimeout(() => {
             setSusccessMessage(null)
           }, 2000)
-        })
-        .catch(error => {
+        }).catch(error => {
           setErrorMessage(`${personToDelete[0].name} was already removed from the server`)
           setTimeout(() => {
             setErrorMessage(null)
