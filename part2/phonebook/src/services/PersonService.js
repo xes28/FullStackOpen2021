@@ -17,21 +17,14 @@ function personService() {
     }
 
     const updatePerson = (id, personToUpdate) => {
-        const request = axios.put(`${baseUrl}/${id}`, personToUpdate)
-        return request.then(response => response.data)
-    }
-
-    const query = (name) => {
-        const request = axios.get(`${baseUrl}/query/${name}`)
-        return request.then(response => response.data)
+        return axios.put(`${baseUrl}/${id}`, personToUpdate);
     }
 
     return {
         getAllPersons,
         deletePerson,
         updatePerson,
-        createPerson,
-        query
+        createPerson
     };
 }
 

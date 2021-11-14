@@ -4,7 +4,6 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Header from './components/Headers'
 import personsService from './services/PersonService';
-import personService from './services/PersonService'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -32,47 +31,52 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    personService().query(newName).then(person => {
-      console.log("Paso 2 ", { person })
-      const newObject = {
-        'name': newName,
-        'number': newNumber,
-      }
-      if (person) {
-        if (window.confirm(`${newName} is already added to phonebook. Do you want to replace the old number with the new one?`)) {
-          personsService().updatePerson(person.id, newObject)
-            .then((response) => {
-              const { data } = response;
-              setSusccessMessage(`Updated ${data.name}`)
-              setTimeout(() => {
-                setSusccessMessage(null)
-              }, 5000)
-            }).catch(error => {
-              setErrorMessage(error.response.data.error)
-              setTimeout(() => {
-                setErrorMessage(null)
-              }, 5000)
-            })
-        }
-        blankInputs();
-      } else {
-        personsService().createPerson(newObject)
+    const person = persons.filter((person) =>
+      person.name === newName
+    )
+
+    const personToAdd = person[0]
+    const updatedPerson = { ...personToAdd, number: newNumber }
+
+    if (person.length !== 0) {
+      if (window.confirm(`${newName} is already added to phonebook. Do you want to replace the old number with the new one?`)) {
+        personsService().updatePerson(updatedPerson.id, updatedPerson)
           .then((response) => {
             const { data } = response;
-            setPersons(persons.concat(data));
-            setSusccessMessage(`Added ${data.name}`)
-            blankInputs();
+            setPersons(persons.map(personItem => personItem.id !== personToAdd.id ? personItem : data))
+            setSusccessMessage(`Updated ${data.name}`)
             setTimeout(() => {
               setSusccessMessage(null)
-            }, 2000)
+            }, 5000)
           }).catch(error => {
-            setErrorMessage(`${error.response.data.error}`)
+            setErrorMessage(error.response.data.error)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
           })
       }
-    })
+      blankInputs();
+    } else {
+      const personToAdd = {
+        name: newName,
+        number: newNumber
+      }
+      personsService().createPerson(personToAdd)
+        .then((response) => {
+          const { data } = response;
+          setPersons(persons.concat(data));
+          setSusccessMessage(`Added ${data.name}`)
+          blankInputs();
+          setTimeout(() => {
+            setSusccessMessage(null)
+          }, 2000)
+        }).catch(error => {
+          setErrorMessage(`${error.response.data.error}`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
+    }
   }
 
 
